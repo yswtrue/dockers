@@ -1,25 +1,111 @@
-phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
-    environment:
-    # - PMA_ARBITRARY=1
-     - PMA_HOST=mysql
-     - PMA_USER=root
-     - PMA_PASSWORD=root
-    restart: always
-    ports:
-     - 9999:80
-    links:
-     - mysql
+version:              '2'
 
-mysql:
-    image: mysql
-    container_name: mysql
-    environment:
-     - MYSQL_ROOT_PASSWORD=root
-     - MYSQL_DATABASE=project_management
-    restart: always
-    ports:
-     - 3306:3306
+services:
+    applications:
+      image:          alpine:3.4
+      command:        chmod -R 777 /apps
+      volumes:
+        - ../Code:/var/www
+        - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+        - ./nginx/vhosts:/etc/nginx/vhosts
+        - ./nginx/ssl:/etc/nginx/ssl
+        - ./nginx/fastcgi.conf:/etc/nginx/fastcgi.conf
+        - ./nginx/pathinfo.conf:/etc/nginx/pathinfo.conf
+        - ./logs/nginx:/apps/logs/nginx
+        - ./logs/php:/apps/logs/php
 
+    php:
+        build:
+            context:  ./php
+        working_dir:  /var/www
+        volumes_from:
+            - applications
+        expose:
+            - '9000'
+        extra_hosts:
+            - "daily.preview.db.mysql:10.249.12.60"
+            - "daily.preview.db.redis:10.249.12.82"
+            - "xiaoer.bubugao.api:10.249.12.82"
+            - "platform.bubugao.api:10.249.12.82"
+            - "ump.bubugao.api:10.249.12.82"
+            - "php.yunhou.api:10.249.12.82"
+            - "business.yunhou.api:10.249.12.82"
+            - "api.search.aomygod.com:10.249.12.82"
+            - "www.maoshili.com:10.249.12.82"
+            - "ssl.aomygod.com:10.249.12.82"
+            - "sms.yunhou.api:10.249.12.82"
+        privileged:   true
 
+    php7:
+        build:
+            context:  ./php7
+        working_dir:  /var/www
+        volumes_from:
+            - applications
+        expose:
+            - '9000'
+        extra_hosts:
+            - "daily.preview.db.mysql:10.249.12.60"
+            - "daily.preview.db.redis:10.249.12.82"
+            - "xiaoer.bubugao.api:10.249.12.82"
+            - "platform.bubugao.api:10.249.12.82"
+            - "ump.bubugao.api:10.249.12.82"
+            - "php.yunhou.api:10.249.12.82"
+            - "business.yunhou.api:10.249.12.82"
+            - "api.search.aomygod.com:10.249.12.82"
+            - "www.maoshili.com:10.249.12.82"
+            - "ssl.aomygod.com:10.249.12.82"
+            - "sms.yunhou.api:10.249.12.82"
+        privileged:   true
+
+    php7official:
+        build:
+            context:  ./php7official
+        working_dir:  /var/www
+        volumes_from:
+            - applications
+        expose:
+            - '9000'
+        privileged:   true
+
+    bi:
+        build:
+            context:  ./php7
+        working_dir:  /var/www/bi-aomygod-com
+        command:      php swoole.php -h0.0.0.0 -D start
+        volumes_from:
+            - applications
+        expose:
+            - '9501'
+        extra_hosts:
+            - "daily.preview.db.mysql:10.249.12.60"
+            - "daily.preview.db.redis:10.249.12.82"
+            - "xiaoer.bubugao.api:10.249.12.82"
+            - "platform.bubugao.api:10.249.12.82"
+            - "ump.bubugao.api:10.249.12.82"
+            - "php.yunhou.api:10.249.12.82"
+            - "business.yunhou.api:10.249.12.82"
+            - "api.search.aomygod.com:10.249.12.82"
+            - "www.maoshili.com:10.249.12.82"
+            - "ssl.aomygod.com:10.249.12.82"
+            - "sms.yunhou.api:10.249.12.82"
+        privileged:   true
+
+    nginx:
+        image:        nginx
+        links:
+            - php
+            - php7
+            - bi
+        ports:
+            - "80:80"
+            - "443:443"
+        volumes_from:
+            - applications
+
+    pma:
+        image:        phpmyadmin/phpmyadmin
+        ports:
+            - "8806:80"
+        volumes:
+            - ./phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
