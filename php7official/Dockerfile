@@ -3,8 +3,7 @@ FROM php:7-fpm-alpine
 RUN apk update \
   && apk add --virtual .ext-deps make autoconf g++ gcc libc-dev curl ca-certificates bash openssl-dev git re2c file graphviz imagemagick-dev libxslt-dev libtool icu-dev
 
-RUN pear update-channels \
-    && pear upgrade
+RUN pear update-channels
 
 
 RUN docker-php-ext-install mysqli pdo_mysql
