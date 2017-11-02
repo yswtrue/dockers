@@ -1,4 +1,4 @@
-FROM php:5.6-fpm-alpine
+FROM php:5.5-fpm-alpine
 
 WORKDIR /tmp
 
@@ -27,9 +27,9 @@ RUN pecl install imagick \
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/bin --filename=composer
 
-RUN git clone https://github.com/phalcon/cphalcon --depth 1 \
+RUN git clone https://github.com/phalcon/cphalcon \
   && cd cphalcon/build/ \
-  && git checkout -b '1.3.1' \
+  && git checkout '1.3.4' \
   && ./install \
   && echo "extension=phalcon.so" > /usr/local/etc/php/conf.d/phalcon.ini
 
