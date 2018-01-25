@@ -1,7 +1,7 @@
-FROM php:7-fpm-alpine
+FROM php:7.1-fpm-alpine
 
 RUN apk update \
-  && apk add --virtual .ext-deps make autoconf g++ gcc libc-dev curl ca-certificates bash openssl-dev git re2c file graphviz imagemagick-dev libxslt-dev libtool icu-dev
+    && apk add --virtual .ext-deps make autoconf g++ gcc libc-dev curl ca-certificates bash openssl-dev git re2c file graphviz imagemagick-dev libxslt-dev libtool icu-dev
 
 RUN pear update-channels
 
@@ -37,9 +37,9 @@ RUN mkdir -p /tmp/h5/compiled/ \
     && chmod -R 777 /tmp/h5/
 
 RUN echo 'xdebug.remote_autostart = 1' >> /usr/local/etc/php/conf.d/xdebug.ini \
-&& echo 'xdebug.remote_enable = 1' >> /usr/local/etc/php/conf.d/xdebug.ini \
-&& echo 'xdebug.remote_port = 9009' >> /usr/local/etc/php/conf.d/xdebug.ini \
-&& echo 'xdebug.remote_host = docker.for.mac.localhost' >> /usr/local/etc/php/conf.d/xdebug.ini
+    && echo 'xdebug.remote_enable = 1' >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo 'xdebug.remote_port = 9009' >> /usr/local/etc/php/conf.d/xdebug.ini \
+    && echo 'xdebug.remote_host = docker.for.mac.localhost' >> /usr/local/etc/php/conf.d/xdebug.ini
 # && echo 'xdebug.remote_connect_back = 1' >> /usr/local/etc/php/conf.d/xdebug.ini
 
 # blackfire
